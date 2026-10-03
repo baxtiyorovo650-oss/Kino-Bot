@@ -1,40 +1,32 @@
 import telebot
+from flask import Flask
+import threading
+import os
 
-TOKEN = "8983559216:AAGtq-RhXY4JArqP3cE8knE9Jjl7uzUy4GE"
+TOKEN = '8983559216:AAGtq-RhXY4JArqP3cE8knE9Jjl7uzUy4GE'
 bot = telebot.TeleBot(TOKEN)
+app = Flask('')
 
-# Kino kodlari bazasi
-movies = {
-    "1": {
-        "title": "Avatar 2: Suv yo'li", 
-        "description": "Fantastika, sarguzasht",
-        "link": "https://t.me/kanal_ manzili yoki video_file_id"
-    },
-    "2": {
-        "title": "Forsaj 10", 
-        "description": "Jangari, Detektiv",
-        "link": "https://t.me/kanal_ manzili yoki video_file_id"
-    }
-}
+@app.route('/')
+def home():
+    return "Bot ishlayapti!"
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
-    bot.reply_to(
-        message, 
-        "🎬 Assalomu alaykum! Kino botimizga xush kelibsiz.\n\nKino kodini yuboring (masalan: **1** yoki **2**):", 
-        parse_mode="Markdown"
-    )
+    bot.reply_to(message, "Salom! Botimiz Render orqali 24/7 ishlamoqda! 🤖")
 
 @bot.message_handler(func=lambda message: True)
-def get_movie(message):
-    code = message.text.strip()
-    
-    if code in movies:
-        movie = movies[code]
-        text = f"🎬 **Kino:** {movie['title']}\n📌 **Janr:** {movie['description']}\n\n🔗 **Ko'chirib olish / Ko'rish:** {movie['link']}"
-        bot.send_message(message.chat.id, text, parse_mode="Markdown")
-    else:
-        bot.reply_to(message, "❌ Kechirasiz, bunday kodli kino topilmadi. Iltimos, to'g'ri kodni kiriting.")
+def echo_all(message):
+    bot.reply_to(message, f"Siz yozdingiz: {message.text}")
 
-print("Kino bot ishga tushdi...")
+def run_flask():
+    # Render taqdim etadigan portni avtomatik oladi (default 8080)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port)
+
+# Veb-serverni alohida oqimda ishga tushiramiz
+t = threading.Thread(target=run_flask)
+t.start()
+
+print("Bot ishga tushdi...")
 bot.infinity_polling()
