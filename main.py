@@ -73,7 +73,7 @@ def callback_check(call):
   else:
     bot.answer_callback_query(
         call.id,
-        "Siz hali hamma kanallarga obuna bo'lmadingiz! ❌",
+        "Siz hali hamma kanallarga obuna bo'lmadingiz!!! ",
         show_alert=True,
     )
 
